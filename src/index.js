@@ -1,3 +1,6 @@
+const http = require('http');
+http.createServer((req, res) => res.end('Lumi is alive!')).listen(process.env.PORT || 3000);
+
 require('dotenv').config();
 const { Client, GatewayIntentBits, Collection, Events } = require('discord.js');
 const fs = require('fs');
