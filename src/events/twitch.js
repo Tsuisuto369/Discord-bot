@@ -63,7 +63,7 @@ async function verifierTwitch(client, forcePost = false) {
             .setTimestamp();
 
           await salon.send({
-            content: `🔴 Hey ! **${streameur.nom}** est en live maintenant ! Go matter ! ${streameur.emoji}`,
+            content: `🔴 Hey ! **${streameur.nom}** est en live maintenant ! ${streameur.emoji}`,
             embeds: [embed],
           });
           console.log(`🔴 ${streameur.nom} est en live !`);
