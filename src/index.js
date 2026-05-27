@@ -68,4 +68,13 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 // ─── Démarrage ────────────────────────────────────────────────────────────────
+// ─── Surveillance YouTube ─────────────────────────────────────────────────────
+const { verifierYoutube } = require('./events/youtube');
+
+client.once('ready', () => {
+  // Première vérification après 1 minute
+  setTimeout(() => verifierYoutube(client), 60_000);
+  // Ensuite toutes les 30 minutes
+  setInterval(() => verifierYoutube(client), 30 * 60 * 1000);
+});
 client.login(process.env.DISCORD_TOKEN);
