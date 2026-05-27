@@ -1,28 +1,17 @@
 const { EmbedBuilder } = require('discord.js');
 const Parser = require('rss-parser');
-const parser = new Parser();
+const parser = new Parser({
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept': 'application/rss+xml, application/xml, text/xml',
+  }
+});
 
 const CHAINES = [
-  {
-    nom: 'Galax',
-    rss: 'https://rsshub.app/youtube/channel/UCDlg0T0r9v2_XRCG8yqB2vQ',
-    emoji: '🌌',
-  },
-  {
-    nom: 'The Guill84',
-    rss: 'https://rsshub.app/youtube/channel/UCk5fFxZePtpX1QLM7edDsNA',
-    emoji: '🎮',
-  },
-{
-    nom: 'TheGuill84 Replay',
-    rss: 'https://rsshub.app/youtube/channel/UCprVmVaIMhSi5PFMgjJ6z2Q',
-    emoji: '🎬',
-  },
-  {
-    nom: 'MrTiboute',
-    rss: 'https://rsshub.app/youtube/channel/UCvESfgvWjujuUV17XUi2evg',
-    emoji: '🎯',
-  },
+  { nom: 'Galax', rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCDlg0T0r9v2_XRCG8yqB2vQ', emoji: '🌌' },
+  { nom: 'The Guill84', rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCk5fFxZePtpX1QLM7edDsNA', emoji: '🎮' },
+  { nom: 'TheGuill84 Replay', rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCprVmVaIMhSi5PFMgjJ6z2Q', emoji: '🎬' },
+  { nom: 'MrTiboute', rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCvESfgvWjujuUV17XUi2evg', emoji: '🎯' },
 ];
 
 const NOM_SALON = 'vidéos-youtube';
@@ -52,7 +41,6 @@ async function verifierYoutube(client) {
 
         if (derniereVideo.link !== dernierLien) {
           dernieresVideos.set(cle, derniereVideo.link);
-
           const videoId = derniereVideo.link.split('v=')[1];
           const embed = new EmbedBuilder()
             .setColor(0xff0000)
@@ -60,10 +48,7 @@ async function verifierYoutube(client) {
             .setDescription(`**${derniereVideo.title}**`)
             .setURL(derniereVideo.link)
             .setImage(`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`)
-            .addFields({
-              name: '📅 Publiée',
-              value: `<t:${Math.floor(new Date(derniereVideo.pubDate).getTime() / 1000)}:R>`,
-            })
+            .addFields({ name: '📅 Publiée', value: `<t:${Math.floor(new Date(derniereVideo.pubDate).getTime() / 1000)}:R>` })
             .setFooter({ text: `📺 ${chaine.nom} sur YouTube` });
 
           await salon.send({
