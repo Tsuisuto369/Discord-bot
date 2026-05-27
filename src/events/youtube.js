@@ -13,6 +13,16 @@ const CHAINES = [
     rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCk5fFxZePtpX1QLM7edDsNA',
     emoji: '🎮',
   },
+{
+    nom: 'TheGuill84 Replay',
+    rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCprVmVaIMhSi5PFMgjJ6z2Q',
+    emoji: '🎬',
+  },
+  {
+    nom: 'MrTiboute',
+    rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCvESfgvWjujuUV17XUi2evg',
+    emoji: '🎯',
+  },
 ];
 
 const NOM_SALON = 'vidéos-youtube';
