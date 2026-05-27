@@ -78,5 +78,5 @@ Le bot surveille automatiquement ces streameurs et poste une notification dans `
 
 \- 🐼 Pandaahhhhh
 
-\- 🎭 FantaBobShow
+\- 🎮 Fildrong
 
