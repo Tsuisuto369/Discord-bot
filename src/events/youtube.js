@@ -5,22 +5,22 @@ const parser = new Parser();
 const CHAINES = [
   {
     nom: 'Galax',
-    rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCDlg0T0r9v2_XRCG8yqB2vQ',
+    rss: 'https://rsshub.app/youtube/channel/UCDlg0T0r9v2_XRCG8yqB2vQ',
     emoji: '🌌',
   },
   {
     nom: 'The Guill84',
-    rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCk5fFxZePtpX1QLM7edDsNA',
+    rss: 'https://rsshub.app/youtube/channel/UCk5fFxZePtpX1QLM7edDsNA',
     emoji: '🎮',
   },
 {
     nom: 'TheGuill84 Replay',
-    rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCprVmVaIMhSi5PFMgjJ6z2Q',
+    rss: 'https://rsshub.app/youtube/channel/UCprVmVaIMhSi5PFMgjJ6z2Q',
     emoji: '🎬',
   },
   {
     nom: 'MrTiboute',
-    rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCvESfgvWjujuUV17XUi2evg',
+    rss: 'https://rsshub.app/youtube/channel/UCvESfgvWjujuUV17XUi2evg',
     emoji: '🎯',
   },
 ];
