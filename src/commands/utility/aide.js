@@ -48,7 +48,6 @@ module.exports = {
           ].join('\n'),
         }
       )
-      .setFooter({ text: 'Lumi Bot • Fait avec 💜' })
       .setTimestamp();
 
     await interaction.reply({ embeds: [embed] });
