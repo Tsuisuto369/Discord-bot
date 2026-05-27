@@ -68,4 +68,11 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 // ─── Démarrage ────────────────────────────────────────────────────────────────
+// ─── Surveillance Twitch ──────────────────────────────────────────────────────
+const { verifierTwitch } = require('./events/twitch');
+
+client.once('ready', () => {
+  setTimeout(() => verifierTwitch(client), 60_000);
+  setInterval(() => verifierTwitch(client), 5 * 60 * 1000);
+});
 client.login(process.env.DISCORD_TOKEN);
