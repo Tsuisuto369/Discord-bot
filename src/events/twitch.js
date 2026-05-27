@@ -1,5 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
 const STREAMEURS = [
   { nom: 'MrTiboute', login: 'mrtiboute', emoji: '👻' },
@@ -9,8 +11,23 @@ const STREAMEURS = [
 ];
 
 const NOM_SALON = 'live-twitch';
-const enLive = new Map();
+const FICHIER_LIVES = path.join(__dirname, '../../lives.json');
 let accessToken = null;
+
+function chargerLives() {
+  try {
+    if (fs.existsSync(FICHIER_LIVES)) {
+      return JSON.parse(fs.readFileSync(FICHIER_LIVES, 'utf8'));
+    }
+  } catch {}
+  return {};
+}
+
+function sauvegarderLives(data) {
+  try {
+    fs.writeFileSync(FICHIER_LIVES, JSON.stringify(data, null, 2));
+  } catch {}
+}
 
 async function getAccessToken() {
   const res = await axios.post(
@@ -19,7 +36,7 @@ async function getAccessToken() {
   accessToken = res.data.access_token;
 }
 
-async function verifierTwitch(client, forcePost = false) {
+async function verifierTwitch(client) {
   try {
     if (!accessToken) await getAccessToken();
 
@@ -32,6 +49,7 @@ async function verifierTwitch(client, forcePost = false) {
     });
 
     const streamsEnLive = res.data.data;
+    const livesActuels = chargerLives();
 
     for (const guild of client.guilds.cache.values()) {
       const salon = guild.channels.cache.find(
@@ -41,10 +59,11 @@ async function verifierTwitch(client, forcePost = false) {
 
       for (const streameur of STREAMEURS) {
         const stream = streamsEnLive.find(s => s.user_login.toLowerCase() === streameur.login.toLowerCase());
-        const etaitEnLive = enLive.get(streameur.login);
+        const etaitEnLive = livesActuels[streameur.login] === true;
 
         if (stream && !etaitEnLive) {
-          enLive.set(streameur.login, true);
+          livesActuels[streameur.login] = true;
+          sauvegarderLives(livesActuels);
 
           const thumbnail = stream.thumbnail_url
             .replace('{width}', '1280')
@@ -69,8 +88,10 @@ async function verifierTwitch(client, forcePost = false) {
           });
           console.log(`🔴 ${streameur.nom} est en live !`);
 
-        } else if (!stream) {
-          enLive.set(streameur.login, false);
+        } else if (!stream && etaitEnLive) {
+          livesActuels[streameur.login] = false;
+          sauvegarderLives(livesActuels);
+          console.log(`⚫ ${streameur.nom} a terminé son live.`);
         }
       }
     }
