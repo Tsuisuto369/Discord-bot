@@ -3,12 +3,12 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('aide')
-    .setDescription('📖 Affiche toutes les commandes de Lumi'),
+    .setDescription('📖 Affiche toutes les commandes de 369 Bot'),
 
   async execute(interaction) {
     const embed = new EmbedBuilder()
       .setColor(0x7c3aed)
-      .setTitle('✨ Lumi — Liste des commandes')
+      .setTitle('✨ 369 Bot — Liste des commandes')
       .setThumbnail(interaction.client.user.displayAvatarURL())
       .addFields(
         {

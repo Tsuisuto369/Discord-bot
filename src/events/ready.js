@@ -4,7 +4,7 @@ module.exports = {
   name: Events.ClientReady,
   once: true,
   execute(client) {
-    console.log(`\n🌟 Lumi est en ligne ! Connecté en tant que ${client.user.tag}`);
+    console.log(`\n🌟 369 Bot est en ligne ! Connecté en tant que ${client.user.tag}`);
     console.log(`📊 Présent sur ${client.guilds.cache.size} serveur(s)\n`);
 
     const activities = [
