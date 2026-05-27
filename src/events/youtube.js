@@ -67,7 +67,7 @@ async function verifierYoutube(client) {
             .setFooter({ text: `📺 ${chaine.nom} sur YouTube` });
 
           await salon.send({
-            content: `🔔 **${chaine.nom}** vient de poster une nouvelle vidéo !`,
+            content: `👀 Hey, regarde par ici ! **${chaine.nom}** vient de sortir une nouvelle vidéo ! 🎉`,
             embeds: [embed],
           });
           console.log(`📺 Nouvelle vidéo postée : ${derniereVideo.title}`);
