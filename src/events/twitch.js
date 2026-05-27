@@ -8,6 +8,7 @@ const STREAMEURS = [
   { nom: 'TheGuill84', login: 'theguill84', emoji: '🟩' },
   { nom: 'Pandaahhhhh', login: 'pandaahhhhh', emoji: '🐼' },
   { nom: 'FantaBobShow', login: 'fantabobshow', emoji: '🎭' },
+  { nom: 'Fildrong', login: 'fildrong', emoji: '🎮' },
 ];
 
 const NOM_SALON = 'live-twitch';
