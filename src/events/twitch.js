@@ -43,7 +43,7 @@ async function verifierTwitch(client, forcePost = false) {
         const stream = streamsEnLive.find(s => s.user_login.toLowerCase() === streameur.login.toLowerCase());
         const etaitEnLive = enLive.get(streameur.login);
 
-        if (stream && (!etaitEnLive || forcePost)) {
+        if (stream && !etaitEnLive) {
           enLive.set(streameur.login, true);
 
           const thumbnail = stream.thumbnail_url
