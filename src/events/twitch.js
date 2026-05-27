@@ -59,12 +59,9 @@ async function verifierTwitch(client) {
 
       for (const streameur of STREAMEURS) {
         const stream = streamsEnLive.find(s => s.user_login.toLowerCase() === streameur.login.toLowerCase());
-        const etaitEnLive = livesActuels[streameur.login] === true;
+        const etaitEnLive = livesActuels[streameur.login]?.enLive === true;
 
         if (stream && !etaitEnLive) {
-          livesActuels[streameur.login] = true;
-          sauvegarderLives(livesActuels);
-
           const thumbnail = stream.thumbnail_url
             .replace('{width}', '1280')
             .replace('{height}', '720');
@@ -82,14 +79,29 @@ async function verifierTwitch(client) {
             .setFooter({ text: '📺 En direct sur Twitch' })
             .setTimestamp();
 
-          await salon.send({
+          const msg = await salon.send({
             content: `🔴 Hey ! **${streameur.nom}** est en live maintenant ! ${streameur.emoji}`,
             embeds: [embed],
           });
+
+          livesActuels[streameur.login] = { enLive: true, messageId: msg.id, salonId: salon.id };
+          sauvegarderLives(livesActuels);
           console.log(`🔴 ${streameur.nom} est en live !`);
 
         } else if (!stream && etaitEnLive) {
-          livesActuels[streameur.login] = false;
+          // Supprimer le message quand le live se termine
+          try {
+            const salonId = livesActuels[streameur.login]?.salonId;
+            const messageId = livesActuels[streameur.login]?.messageId;
+            if (salonId && messageId) {
+              const salonMsg = await client.channels.fetch(salonId);
+              const message = await salonMsg.messages.fetch(messageId);
+              await message.delete();
+              console.log(`⚫ Message de ${streameur.nom} supprimé.`);
+            }
+          } catch {}
+
+          livesActuels[streameur.login] = { enLive: false, messageId: null, salonId: null };
           sauvegarderLives(livesActuels);
           console.log(`⚫ ${streameur.nom} a terminé son live.`);
         }
