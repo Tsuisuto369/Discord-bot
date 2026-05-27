@@ -2,8 +2,8 @@ const { EmbedBuilder } = require('discord.js');
 const axios = require('axios');
 
 const STREAMEURS = [
-  { nom: 'MrTiboute', login: 'mrtiboute', emoji: '🎯' },
-  { nom: 'TheGuill84', login: 'theguill84', emoji: '🎮' },
+  { nom: 'MrTiboute', login: 'mrtiboute', emoji: '👻' },
+  { nom: 'TheGuill84', login: 'theguill84', emoji: '🟩' },
   { nom: 'Pandaahhhhh', login: 'pandaahhhhh', emoji: '🐼' },
 ];
 
