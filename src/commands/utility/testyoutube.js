@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { verifierYoutube } = require('../../../src/events/youtube');
+const { verifierYoutube } = require('../../events/youtube');
 
 module.exports = {
   data: new SlashCommandBuilder()
