@@ -5,12 +5,12 @@ const parser = new Parser();
 const CHAINES = [
   {
     nom: 'Galax',
-    rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCcHqeJgEjy3EJTyiXANSp6g',
+    rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCDlg0T0r9v2_XRCG8yqB2vQ',
     emoji: '🌌',
   },
   {
     nom: 'The Guill84',
-    rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCuHB6aHMlMfWYGEGbAiRLhQ',
+    rss: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCk5fFxZePtpX1QLM7edDsNA',
     emoji: '🎮',
   },
 ];
