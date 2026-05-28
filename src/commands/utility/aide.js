@@ -1,10 +1,8 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('aide')
     .setDescription('📖 Affiche toutes les commandes de 369 Bot'),
-
   async execute(interaction) {
     const embed = new EmbedBuilder()
       .setColor(0x7c3aed)
@@ -46,10 +44,16 @@ module.exports = {
             '`/ban @membre [raison]` — Bannir',
             '`/clear [nombre]` — Supprimer des messages',
           ].join('\n'),
+        },
+        {
+          name: '🔴 Twitch',
+          value: [
+            '`/ajouterstream [login] [nom] [emoji]` — Ajouter un streameur',
+            '`/retirerstream [login]` — Retirer un streameur',
+          ].join('\n'),
         }
       )
       .setTimestamp();
-
     await interaction.reply({ embeds: [embed] });
   },
 };
