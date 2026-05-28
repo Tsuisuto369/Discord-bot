@@ -1,34 +1,14 @@
 const { EmbedBuilder } = require('discord.js');
 const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
 
-const STREAMEURS = [
-  { nom: 'MrTiboute', login: 'mrtiboute', emoji: '👻' },
-  { nom: 'TheGuill84', login: 'theguill84', emoji: '🟩' },
-  { nom: 'Pandaahhhhh', login: 'pandaahhhhh', emoji: '🐼' },
-  { nom: 'Fildrong', login: 'fildrong', emoji: '🎮' },
-  { nom: 'Dkayed', login: 'dkayed', emoji: '⚡' },
-];
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
 
 const NOM_SALON = 'live-twitch';
-const FICHIER_LIVES = path.join(__dirname, '../../lives.json');
 let accessToken = null;
-
-function chargerLives() {
-  try {
-    if (fs.existsSync(FICHIER_LIVES)) {
-      return JSON.parse(fs.readFileSync(FICHIER_LIVES, 'utf8'));
-    }
-  } catch {}
-  return {};
-}
-
-function sauvegarderLives(data) {
-  try {
-    fs.writeFileSync(FICHIER_LIVES, JSON.stringify(data, null, 2));
-  } catch {}
-}
 
 async function getAccessToken() {
   const res = await axios.post(
@@ -41,7 +21,14 @@ async function verifierTwitch(client) {
   try {
     if (!accessToken) await getAccessToken();
 
-    const logins = STREAMEURS.map(s => `user_login=${s.login}`).join('&');
+    // Récupère tous les streameurs depuis Supabase
+    const { data: streameurs, error } = await supabase
+      .from('streameurs')
+      .select('*');
+
+    if (error || !streameurs?.length) return;
+
+    const logins = streameurs.map(s => `user_login=${s.login}`).join('&');
     const res = await axios.get(`https://api.twitch.tv/helix/streams?${logins}`, {
       headers: {
         'Client-ID': process.env.TWITCH_CLIENT_ID,
@@ -50,7 +37,6 @@ async function verifierTwitch(client) {
     });
 
     const streamsEnLive = res.data.data;
-    const livesActuels = chargerLives();
 
     for (const guild of client.guilds.cache.values()) {
       const salon = guild.channels.cache.find(
@@ -58,11 +44,10 @@ async function verifierTwitch(client) {
       );
       if (!salon) continue;
 
-      for (const streameur of STREAMEURS) {
+      for (const streameur of streameurs) {
         const stream = streamsEnLive.find(s => s.user_login.toLowerCase() === streameur.login.toLowerCase());
-        const etaitEnLive = livesActuels[streameur.login]?.enLive === true;
 
-        if (stream && !etaitEnLive) {
+        if (stream && !streameur.en_live) {
           const thumbnail = stream.thumbnail_url
             .replace('{width}', '1280')
             .replace('{height}', '720');
@@ -85,25 +70,31 @@ async function verifierTwitch(client) {
             embeds: [embed],
           });
 
-          livesActuels[streameur.login] = { enLive: true, messageId: msg.id, salonId: salon.id };
-          sauvegarderLives(livesActuels);
+          // Sauvegarde dans Supabase
+          await supabase
+            .from('streameurs')
+            .update({ en_live: true, message_id: msg.id, salon_id: salon.id })
+            .eq('login', streameur.login);
+
           console.log(`🔴 ${streameur.nom} est en live !`);
 
-        } else if (!stream && etaitEnLive) {
-          // Supprimer le message quand le live se termine
+        } else if (!stream && streameur.en_live) {
+          // Supprime le message
           try {
-            const salonId = livesActuels[streameur.login]?.salonId;
-            const messageId = livesActuels[streameur.login]?.messageId;
-            if (salonId && messageId) {
-              const salonMsg = await client.channels.fetch(salonId);
-              const message = await salonMsg.messages.fetch(messageId);
+            if (streameur.salon_id && streameur.message_id) {
+              const salonMsg = await client.channels.fetch(streameur.salon_id);
+              const message = await salonMsg.messages.fetch(streameur.message_id);
               await message.delete();
               console.log(`⚫ Message de ${streameur.nom} supprimé.`);
             }
           } catch {}
 
-          livesActuels[streameur.login] = { enLive: false, messageId: null, salonId: null };
-          sauvegarderLives(livesActuels);
+          // Met à jour Supabase
+          await supabase
+            .from('streameurs')
+            .update({ en_live: false, message_id: null, salon_id: null })
+            .eq('login', streameur.login);
+
           console.log(`⚫ ${streameur.nom} a terminé son live.`);
         }
       }
