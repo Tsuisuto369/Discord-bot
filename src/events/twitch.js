@@ -2,11 +2,6 @@ const { EmbedBuilder } = require('discord.js');
 const axios = require('axios');
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-);
-
 const NOM_SALON = 'live-twitch';
 let accessToken = null;
 
@@ -19,9 +14,13 @@ async function getAccessToken() {
 
 async function verifierTwitch(client) {
   try {
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_KEY
+    );
+
     if (!accessToken) await getAccessToken();
 
-    // Récupère tous les streameurs depuis Supabase
     const { data: streameurs, error } = await supabase
       .from('streameurs')
       .select('*');
@@ -70,7 +69,6 @@ async function verifierTwitch(client) {
             embeds: [embed],
           });
 
-          // Sauvegarde dans Supabase
           await supabase
             .from('streameurs')
             .update({ en_live: true, message_id: msg.id, salon_id: salon.id })
@@ -79,7 +77,6 @@ async function verifierTwitch(client) {
           console.log(`🔴 ${streameur.nom} est en live !`);
 
         } else if (!stream && streameur.en_live) {
-          // Supprime le message
           try {
             if (streameur.salon_id && streameur.message_id) {
               const salonMsg = await client.channels.fetch(streameur.salon_id);
@@ -89,7 +86,6 @@ async function verifierTwitch(client) {
             }
           } catch {}
 
-          // Met à jour Supabase
           await supabase
             .from('streameurs')
             .update({ en_live: false, message_id: null, salon_id: null })
