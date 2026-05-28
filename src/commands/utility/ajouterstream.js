@@ -11,9 +11,6 @@ module.exports = {
     )
     .addStringOption(opt =>
       opt.setName('nom').setDescription('Nom affiché (ex: MrTiboute)').setRequired(true)
-    )
-    .addStringOption(opt =>
-      opt.setName('emoji').setDescription('Emoji (ex: 👻)').setRequired(false)
     ),
 
   async execute(interaction) {
@@ -24,11 +21,10 @@ module.exports = {
 
     const login = interaction.options.getString('login').toLowerCase();
     const nom = interaction.options.getString('nom');
-    const emoji = interaction.options.getString('emoji') || '🎮';
 
     const { error } = await supabase
       .from('streameurs')
-      .insert({ login, nom, emoji });
+      .insert({ login, nom, emoji: '🎮' });
 
     if (error) {
       if (error.code === '23505') {
@@ -37,6 +33,6 @@ module.exports = {
       return interaction.reply({ content: '❌ Erreur lors de l\'ajout.', ephemeral: true });
     }
 
-    await interaction.reply({ content: `✅ **${nom}** ${emoji} a été ajouté à la surveillance Twitch !` });
+    await interaction.reply({ content: `✅ **${nom}** a été ajouté à la surveillance Twitch !` });
   },
 };
