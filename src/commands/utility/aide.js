@@ -50,6 +50,7 @@ module.exports = {
           value: [
             '`/ajouterstream [login] [nom]` — Ajouter un streameur',
             '`/retirerstream [login]` — Retirer un streameur',
+            '`/streamers` — Liste tous les streameurs surveillés',
           ].join('\n'),
         }
       )
