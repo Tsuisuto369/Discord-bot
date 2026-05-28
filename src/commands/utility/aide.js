@@ -48,7 +48,7 @@ module.exports = {
         {
           name: '🔴 Twitch',
           value: [
-            '`/ajouterstream [login] [nom] [emoji]` — Ajouter un streameur',
+            '`/ajouterstream [login] [nom]` — Ajouter un streameur',
             '`/retirerstream [login]` — Retirer un streameur',
           ].join('\n'),
         }
