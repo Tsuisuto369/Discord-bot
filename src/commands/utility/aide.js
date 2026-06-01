@@ -13,7 +13,7 @@ module.exports = {
           name: '🎲 Fun & Jeux',
           value: [
             '`/pile-ou-face` — Lancez une pièce',
-            '`/des [faces]` — Lancez un dé (défaut: 6)',
+            '`/des [faces]` — Lancez un dé (défaut: 20)',
             '`/blague` — Une blague aléatoire',
             '`/citation` — Une citation inspirante',
             '`/quiz` — Question culture générale',
