@@ -11,7 +11,7 @@ module.exports = {
 
   async execute(interaction) {
     const target = interaction.options.getMember('membre') || interaction.member;
-    const userData = getUser(target.user.id, interaction.guild.id);
+    const userData = await getUser(target.user.id, interaction.guild.id);
 
     const needed = xpForLevel(userData.level);
     const progress = Math.floor((userData.xp / needed) * 20);
@@ -20,7 +20,6 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setColor(0x7c3aed)
       .setTitle(`⭐ Rang de ${target.user.username}`)
-      .setThumbnail(target.user.displayAvatarURL({ dynamic: true }))
       .addFields(
         { name: '🏆 Niveau', value: `**${userData.level}**`, inline: true },
         { name: '✨ XP', value: `**${userData.xp}** / ${needed}`, inline: true },

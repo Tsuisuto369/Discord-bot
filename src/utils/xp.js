@@ -1,22 +1,33 @@
-// Système XP en mémoire (persiste tant que le bot tourne)
-// Pour une persistance réelle, utilisez une BDD comme SQLite ou MongoDB Atlas (free)
-
-const xpData = new Map();
-
-function getUser(userId, guildId) {
-  const key = `${guildId}-${userId}`;
-  if (!xpData.has(key)) {
-    xpData.set(key, { xp: 0, level: 1, messages: 0 });
-  }
-  return xpData.get(key);
-}
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 function xpForLevel(level) {
   return level * level * 100;
 }
 
-function addXP(userId, guildId, amount = 10) {
-  const user = getUser(userId, guildId);
+async function getUser(userId, guildId) {
+  const { data } = await supabase
+    .from('xp')
+    .select('*')
+    .eq('guild_id', guildId)
+    .eq('user_id', userId)
+    .single();
+
+  if (!data) {
+    const { data: newUser } = await supabase
+      .from('xp')
+      .insert({ guild_id: guildId, user_id: userId })
+      .select()
+      .single();
+    return newUser;
+  }
+
+  return data;
+}
+
+async function addXP(userId, guildId, amount = 10) {
+  const user = await getUser(userId, guildId);
+
   user.xp += amount;
   user.messages += 1;
 
@@ -27,18 +38,25 @@ function addXP(userId, guildId, amount = 10) {
     leveledUp = true;
   }
 
+  await supabase
+    .from('xp')
+    .update({ xp: user.xp, level: user.level, messages: user.messages })
+    .eq('guild_id', guildId)
+    .eq('user_id', userId);
+
   return { ...user, leveledUp };
 }
 
-function getLeaderboard(guildId, limit = 10) {
-  const entries = [];
-  for (const [key, data] of xpData.entries()) {
-    if (key.startsWith(guildId)) {
-      const userId = key.replace(`${guildId}-`, '');
-      entries.push({ userId, ...data });
-    }
-  }
-  return entries.sort((a, b) => b.level - a.level || b.xp - a.xp).slice(0, limit);
+async function getLeaderboard(guildId, limit = 10) {
+  const { data } = await supabase
+    .from('xp')
+    .select('*')
+    .eq('guild_id', guildId)
+    .order('level', { ascending: false })
+    .order('xp', { ascending: false })
+    .limit(limit);
+
+  return (data || []).map(row => ({ userId: row.user_id, ...row }));
 }
 
 module.exports = { getUser, addXP, xpForLevel, getLeaderboard };

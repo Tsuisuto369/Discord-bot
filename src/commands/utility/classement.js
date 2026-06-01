@@ -9,7 +9,7 @@ module.exports = {
     .setDescription('🏆 Top 10 des membres par XP'),
 
   async execute(interaction) {
-    const top = getLeaderboard(interaction.guild.id, 10);
+    const top = await getLeaderboard(interaction.guild.id, 10);
 
     if (!top.length) {
       return interaction.reply('❌ Personne n\'a encore de XP sur ce serveur !');
