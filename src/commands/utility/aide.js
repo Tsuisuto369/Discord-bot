@@ -31,7 +31,6 @@ module.exports = {
           name: '🛠️ Utilitaires',
           value: [
             '`/météo [ville]` — Météo en temps réel',
-            '`/avatar [@membre]` — Avatar en grand',
             '`/serverinfo` — Infos du serveur',
             '`/userinfo [@membre]` — Infos d\'un membre',
             '`/ping` — Latence du bot',
