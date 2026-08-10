@@ -42,14 +42,25 @@ async function verifierTwitch(client) {
     const settingsByGuild = new Map((settingsRows || []).map(s => [s.guild_id, s]));
 
     const logins = streameurs.map(s => `user_login=${s.login}`).join('&');
-    const res = await axios.get(`https://api.twitch.tv/helix/streams?${logins}`, {
-      headers: {
-        'Client-ID': process.env.TWITCH_CLIENT_ID,
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
+    const loginsUsers = streameurs.map(s => `login=${s.login}`).join('&');
 
-    const streamsEnLive = res.data.data;
+    const [resStreams, resUsers] = await Promise.all([
+      axios.get(`https://api.twitch.tv/helix/streams?${logins}`, {
+        headers: {
+          'Client-ID': process.env.TWITCH_CLIENT_ID,
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      }),
+      axios.get(`https://api.twitch.tv/helix/users?${loginsUsers}`, {
+        headers: {
+          'Client-ID': process.env.TWITCH_CLIENT_ID,
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      }),
+    ]);
+
+    const streamsEnLive = resStreams.data.data;
+    const photosProfil = new Map(resUsers.data.data.map(u => [u.login.toLowerCase(), u.profile_image_url]));
 
     for (const guild of client.guilds.cache.values()) {
       const settings = settingsByGuild.get(guild.id);
@@ -64,6 +75,8 @@ async function verifierTwitch(client) {
             .replace('{width}', '1280')
             .replace('{height}', '720');
 
+          const photoProfil = photosProfil.get(streameur.login.toLowerCase());
+
           const embed = new EmbedBuilder()
             .setColor(0x9146ff)
             .setTitle(`${streameur.emoji} ${streameur.nom} est en live !`)
@@ -76,6 +89,8 @@ async function verifierTwitch(client) {
             )
             .setFooter({ text: '📺 En direct sur Twitch' })
             .setTimestamp();
+
+          if (photoProfil) embed.setThumbnail(photoProfil);
 
           const msg = await salon.send({
             content: `🔴 Hey ! **${streameur.nom}** est en live maintenant ! ${streameur.emoji}`,
