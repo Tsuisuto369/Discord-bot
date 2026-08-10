@@ -1,8 +1,8 @@
 const { EmbedBuilder } = require('discord.js');
 const axios = require('axios');
-const { createClient } = require('@supabase/supabase-js');
+const supabase = require('../utils/supabase');
 
-const NOM_SALON = 'live-twitch';
+const NOMS_SALON_PAR_DEFAUT = ['live-twitch', 'twitch', 'lives'];
 let accessToken = null;
 
 async function getAccessToken() {
@@ -12,20 +12,34 @@ async function getAccessToken() {
   accessToken = res.data.access_token;
 }
 
+// Récupère le salon d'annonce configuré via /setchannel, sinon retombe
+// sur l'ancienne recherche par nom (rétrocompatibilité).
+async function resolveSalonAnnonce(client, guild, settings) {
+  if (settings?.announce_channel_id) {
+    try {
+      return await client.channels.fetch(settings.announce_channel_id);
+    } catch {
+      // salon supprimé/inaccessible : on retombe sur la recherche par nom
+    }
+  }
+  return guild.channels.cache.find(c => NOMS_SALON_PAR_DEFAUT.includes(c.name)) || null;
+}
+
 async function verifierTwitch(client) {
   try {
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_KEY
-    );
-
     if (!accessToken) await getAccessToken();
 
-    const { data: streameurs, error } = await supabase
-      .from('streameurs')
-      .select('*');
+    // Une seule requête Supabase pour les streameurs et une pour les
+    // réglages des salons, exécutées en parallèle (au lieu d'une requête
+    // par serveur comme avant) — optimisation.
+    const [{ data: streameurs, error: errStreameurs }, { data: settingsRows }] = await Promise.all([
+      supabase.from('streameurs').select('*'),
+      supabase.from('settings').select('*'),
+    ]);
 
-    if (error || !streameurs?.length) return;
+    if (errStreameurs || !streameurs?.length) return;
+
+    const settingsByGuild = new Map((settingsRows || []).map(s => [s.guild_id, s]));
 
     const logins = streameurs.map(s => `user_login=${s.login}`).join('&');
     const res = await axios.get(`https://api.twitch.tv/helix/streams?${logins}`, {
@@ -38,9 +52,8 @@ async function verifierTwitch(client) {
     const streamsEnLive = res.data.data;
 
     for (const guild of client.guilds.cache.values()) {
-      const salon = guild.channels.cache.find(
-        c => c.name === NOM_SALON || c.name === 'twitch' || c.name === 'lives'
-      );
+      const settings = settingsByGuild.get(guild.id);
+      const salon = await resolveSalonAnnonce(client, guild, settings);
       if (!salon) continue;
 
       for (const streameur of streameurs) {
@@ -77,14 +90,36 @@ async function verifierTwitch(client) {
           console.log(`🔴 ${streameur.nom} est en live !`);
 
         } else if (!stream && streameur.en_live) {
-          try {
-            if (streameur.salon_id && streameur.message_id) {
-              const salonMsg = await client.channels.fetch(streameur.salon_id);
-              const message = await salonMsg.messages.fetch(streameur.message_id);
+          if (streameur.salon_id && streameur.message_id) {
+            try {
+              const salonAnnonce = await client.channels.fetch(streameur.salon_id);
+              const message = await salonAnnonce.messages.fetch(streameur.message_id);
+
+              // Si un salon "fin de live" est configuré, on y garde une
+              // trace de l'annonce avant de la supprimer du salon d'annonce.
+              if (settings?.fin_channel_id) {
+                try {
+                  const salonFin = await client.channels.fetch(settings.fin_channel_id);
+                  const ancienEmbed = message.embeds[0];
+                  const embedFin = ancienEmbed
+                    ? EmbedBuilder.from(ancienEmbed).setColor(0x57534e).setFooter({ text: '📺 Live terminé' }).setTimestamp()
+                    : null;
+
+                  await salonFin.send({
+                    content: `⚫ **${streameur.nom}** a terminé son live.`,
+                    embeds: embedFin ? [embedFin] : [],
+                  });
+                } catch (err) {
+                  console.error(`Erreur envoi salon fin pour ${streameur.nom}:`, err.message);
+                }
+              }
+
               await message.delete();
               console.log(`⚫ Message de ${streameur.nom} supprimé.`);
+            } catch {
+              // message ou salon déjà supprimé : on ignore
             }
-          } catch {}
+          }
 
           await supabase
             .from('streameurs')

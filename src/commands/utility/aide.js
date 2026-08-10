@@ -10,38 +10,9 @@ module.exports = {
       .setThumbnail(interaction.client.user.displayAvatarURL())
       .addFields(
         {
-          name: '🎲 Fun & Jeux',
-          value: [
-            '`/pile-ou-face` — Lancez une pièce',
-            '`/des [faces]` — Lancez un dé (défaut: 20)',
-            '`/blague` — Une blague aléatoire',
-            '`/citation` — Une citation inspirante',
-            '`/quiz` — Question culture générale',
-            '`/8ball [question]` — La boule magique répond',
-          ].join('\n'),
-        },
-        {
-          name: '📊 XP & Niveaux',
-          value: [
-            '`/rang [@membre]` — Voir votre niveau XP',
-            '`/classement` — Top 10 du serveur',
-          ].join('\n'),
-        },
-        {
           name: '🛠️ Utilitaires',
           value: [
-            '`/météo [ville]` — Météo en temps réel',
-            '`/serverinfo` — Infos du serveur',
-            '`/userinfo [@membre]` — Infos d\'un membre',
             '`/ping` — Latence du bot',
-          ].join('\n'),
-        },
-        {
-          name: '🔨 Modération',
-          value: [
-            '`/kick @membre [raison]` — Expulser',
-            '`/ban @membre [raison]` — Bannir',
-            '`/clear [nombre]` — Supprimer des messages',
           ].join('\n'),
         },
         {
@@ -50,6 +21,8 @@ module.exports = {
             '`/ajouterstream [login] [nom]` — Ajouter un streameur',
             '`/retirerstream [login]` — Retirer un streameur',
             '`/streamers` — Liste tous les streameurs surveillés',
+            '`/setchannel [type] [salon]` — Configurer les salons Twitch',
+            '`/testtwitch` — Force la vérification Twitch',
           ].join('\n'),
         }
       )

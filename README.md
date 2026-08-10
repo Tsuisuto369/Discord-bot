@@ -1,84 +1,28 @@
-\# 🤖 369 Bot — Bot Discord Multifonction
+# 🤖 369 Bot — Bot Discord Twitch
 
-
-
-\## 🎲 Fun \& Jeux
+## 🛠️ Utilitaires
 
 | Commande | Description |
-
 |----------|-------------|
-
-| `/pile-ou-face` | Lance une pièce |
-
-| `/des \[faces]` | Lance un dé (défaut: 6) |
-
-| `/blague` | Une blague aléatoire |
-
-| `/citation` | Une citation inspirante |
-
-| `/quiz` | Question de culture générale |
-
-| `/8ball \[question]` | La boule magique répond |
-
-
-
-\## 📊 XP \& Niveaux
-
-| Commande | Description |
-
-|----------|-------------|
-
-| `/rang \[@membre]` | Voir votre niveau XP |
-
-| `/classement` | Top 10 du serveur |
-
-
-
-\## 🛠️ Utilitaires
-
-| Commande | Description |
-
-|----------|-------------|
-
 | `/aide` | Liste toutes les commandes |
-
 | `/ping` | Latence du bot |
 
-| `/météo \[ville]` | Météo en temps réel |
+## 🔴 Twitch
 
-| `/avatar \[@membre]` | Avatar en grand |
-
-| `/serverinfo` | Infos du serveur |
-
-| `/userinfo \[@membre]` | Infos d'un membre |
-
-
-
-\## 🔨 Modération
+Le bot surveille automatiquement une liste de streameurs et poste une notification quand ils passent en live.
 
 | Commande | Description |
-
 |----------|-------------|
+| `/ajouterstream [login] [nom]` | Ajouter un streameur à surveiller (admin) |
+| `/retirerstream [login]` | Retirer un streameur de la surveillance (admin) |
+| `/streamers` | Liste tous les streameurs surveillés |
+| `/setchannel [type] [salon]` | Configurer le salon d'annonce ou de fin de live (admin) |
+| `/testtwitch` | Force une vérification Twitch immédiate (admin) |
 
-| `/kick @membre \[raison]` | Expulser un membre |
+### Configuration des salons
 
-| `/ban @membre \[raison]` | Bannir un membre |
+Par défaut, si aucun salon n'est configuré via `/setchannel`, le bot cherche un salon nommé `live-twitch`, `twitch` ou `lives`.
 
-| `/clear \[nombre]` | Supprimer des messages |
+Utilise `/setchannel type:Annonce de live salon:#ton-salon` pour choisir le salon où les lives sont annoncés.
 
-
-
-\## 🔴 Twitch
-
-Le bot surveille automatiquement ces streameurs et poste une notification dans `#live-twitch` quand ils passent en live :
-
-\- 👻 MrTiboute
-
-\- 🟩 TheGuill84
-
-\- 🐼 Pandaahhhhh
-
-\- 🎮 Fildrong
-
-\- ⚡ Dkayed
-
+Utilise `/setchannel type:Fin de live salon:#ton-salon` pour choisir un salon où garder une trace des lives terminés. Quand un stream se termine, l'annonce est supprimée du salon d'annonce et une version "Live terminé" est repostée dans ce second salon (si configuré). Sans ce réglage, l'annonce est simplement supprimée sans trace.

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { createClient } = require('@supabase/supabase-js');
+const supabase = require('../../utils/supabase');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,11 +14,6 @@ module.exports = {
     ),
 
   async execute(interaction) {
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_KEY
-    );
-
     const login = interaction.options.getString('login').toLowerCase();
     const nom = interaction.options.getString('nom');
 

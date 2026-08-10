@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { createClient } = require('@supabase/supabase-js');
+const supabase = require('../../utils/supabase');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -7,11 +7,6 @@ module.exports = {
     .setDescription('📋 Liste tous les streameurs surveillés'),
 
   async execute(interaction) {
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_KEY
-    );
-
     const { data: streameurs, error } = await supabase
       .from('streameurs')
       .select('*')
