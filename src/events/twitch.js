@@ -71,9 +71,14 @@ async function verifierTwitch(client) {
         const stream = streamsEnLive.find(s => s.user_login.toLowerCase() === streameur.login.toLowerCase());
 
         if (stream && !streameur.en_live) {
+          // Cache-buster : Discord met les images en cache par URL, et l'URL
+          // de la miniature Twitch est toujours la même pour un streamer
+          // donné (seul le contenu change côté Twitch). Sans paramètre
+          // unique, Discord peut donc réafficher une ancienne miniature
+          // en cache au lieu de la miniature actuelle du live.
           const thumbnail = stream.thumbnail_url
             .replace('{width}', '1280')
-            .replace('{height}', '720');
+            .replace('{height}', '720') + `?t=${Date.now()}`;
 
           const photoProfil = photosProfil.get(streameur.login.toLowerCase());
 
